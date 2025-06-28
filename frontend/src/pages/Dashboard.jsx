@@ -1,15 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom'; 
+import { useState, useEffect } from "react"
+import { Link } from 'react-router-dom'
+import useDashboard from "../hooks/useDashboard"
 
 export default function Dashboard() {
-  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
-  const [tasks, setTasks] = useState([]);
-
-  // ✅ Load tasks from localStorage only
-  useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    setTasks(savedTasks);
-  }, []);
+  const { isSidebarOpen, setSidebarOpen, tasks } = useDashboard()
 
   return (
     <div className="relative flex h-screen bg-blue-50">
@@ -113,13 +107,12 @@ export default function Dashboard() {
                   {tasks.map((task) => (
                     <li
                       key={task.id}
-                      className={`p-3 rounded shadow-sm flex justify-between items-center ${
-                        task.priority === 'High'
-                          ? 'bg-red-200'
-                          : task.priority === 'Medium'
+                      className={`p-3 rounded shadow-sm flex justify-between items-center ${task.priority === 'High'
+                        ? 'bg-red-200'
+                        : task.priority === 'Medium'
                           ? 'bg-yellow-200'
                           : 'bg-green-200'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="font-bold">{task.title}</div>
@@ -146,5 +139,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }
