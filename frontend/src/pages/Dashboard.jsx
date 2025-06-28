@@ -3,22 +3,12 @@ import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
-  const [isSettingsPanelOpen, setSettingsPanelOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchResult, setSearchResult] = useState(false);
   const [tasks, setTasks] = useState([]);
 
-  // ✅ Fetch tasks on component mount
+  // ✅ Load tasks from localStorage only
   useEffect(() => {
-    fetch("http://localhost:5000/api/assignments", {
-      credentials: 'include',
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-        return res.json();
-      })
-      .then(data => setTasks(data))
-      .catch(err => console.error("❌ Failed to load tasks:", err));
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    setTasks(savedTasks);
   }, []);
 
   return (
@@ -110,11 +100,11 @@ export default function Dashboard() {
           <main className="flex-1 pt-2">
             <div className="p-4 text-white bg-blue-500 rounded-md shadow-md">
               <div className="flex items-center justify-center">
-                <span className="text-3xl font-semibold tracking-wider uppercase">In Progress</span>
+                <span className="text-3xl font-semibold tracking-wider uppercase">Task List</span>
               </div>
             </div>
 
-            {/* Task List Section */}
+            {/* ✅ Task List Section */}
             <div className="p-4 mt-4 bg-white rounded-md shadow-md">
               {tasks.length === 0 ? (
                 <span className="text-gray-400">No tasks yet...</span>
@@ -122,7 +112,7 @@ export default function Dashboard() {
                 <ul className="space-y-2">
                   {tasks.map((task) => (
                     <li
-                      key={task._id}
+                      key={task.id}
                       className={`p-3 rounded shadow-sm flex justify-between items-center ${
                         task.priority === 'High'
                           ? 'bg-red-200'
@@ -135,6 +125,7 @@ export default function Dashboard() {
                         <div className="font-bold">{task.title}</div>
                         <div className="text-sm text-gray-700">{task.subject}</div>
                         <div className="text-xs text-gray-500">Due: {task.dueDate}</div>
+                        <div className="text-xs text-gray-500">Teacher: {task.teacher}</div>
                       </div>
                       <span className="text-sm">
                         {task.completed ? "✅ Done" : "⏳ Pending"}
