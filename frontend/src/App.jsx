@@ -2,9 +2,10 @@ import { lazy } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
-import AddTask from "./pages/AddTask" // ✅ import the new page
+import AddTask from "./pages/AddTask"
 import PrivateRoute from "./components/PrivateRoute"
 import { AuthProvider } from "./context/AuthContext"
+import CompletedTasks from "./pages/CompletedTasks"
 
 const Dashboard = lazy(() => import("./pages/Dashboard"))
 
@@ -21,7 +22,7 @@ function App() {
           element={
             // <PrivateRoute>
             <Dashboard />
-            // </PrivateRoute>
+            //  </PrivateRoute>
           }
         />
 
@@ -30,7 +31,16 @@ function App() {
           element={
             // <PrivateRoute>
             <AddTask />
-            // </PrivateRoute>
+            //  </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/completed-task"
+          element={
+            // <PrivateRoute>
+            <CompletedTasks />
+            //  </PrivateRoute>
           }
         />
       </Routes>

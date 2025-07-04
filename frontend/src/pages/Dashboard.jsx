@@ -1,9 +1,28 @@
-import { useState, useEffect } from "react"
-import { Link } from 'react-router-dom'
-import useDashboard from "../hooks/useDashboard"
+import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom'; 
 
 export default function Dashboard() {
-  const { isSidebarOpen, setSidebarOpen, tasks } = useDashboard()
+  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
+  const [tasks, setTasks] = useState([]);
+  const [completed, setCompleted] = useState(Boolean)
+
+
+
+  // ✅ Load tasks from localStorage only
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    setTasks(savedTasks);
+  }, []);
+
+  const onToggleCompleted = (taskId, isChecked) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, completed: isChecked } : task
+    );
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  };
+  
+
 
   return (
     <div className="relative flex h-screen bg-blue-50">
@@ -63,6 +82,19 @@ export default function Dashboard() {
                     {isSidebarOpen && <span className="whitespace-nowrap">Add Task</span>}
                   </Link>
                 </li>
+
+                <li>
+              <Link to="/completed-task" className="flex items-center space-x-2">
+               
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" d="M12 2c-.791 0-1.55.314-2.11.874l-.893.893a.985.985 0 0 1-.696.288H7.04A2.984 2.984 0 0 0 4.055 7.04v1.262a.986.986 0 0 1-.288.696l-.893.893a2.984 2.984 0 0 0 0 4.22l.893.893a.985.985 0 0 1 .288.696v1.262a2.984 2.984 0 0 0 2.984 2.984h1.262c.261 0 .512.104.696.288l.893.893a2.984 2.984 0 0 0 4.22 0l.893-.893a.985.985 0 0 1 .696-.288h1.262a2.984 2.984 0 0 0 2.984-2.984V15.7c0-.261.104-.512.288-.696l.893-.893a2.984 2.984 0 0 0 0-4.22l-.893-.893a.985.985 0 0 1-.288-.696V7.04a2.984 2.984 0 0 0-2.984-2.984h-1.262a.985.985 0 0 1-.696-.288l-.893-.893A2.984 2.984 0 0 0 12 2Zm3.683 7.73a1 1 0 1 0-1.414-1.413l-4.253 4.253-1.277-1.277a1 1 0 0 0-1.415 1.414l1.985 1.984a1 1 0 0 0 1.414 0l4.96-4.96Z" clip-rule="evenodd"/>
+                </svg>
+
+             
+                {isSidebarOpen && <span className="whitespace-nowrap">Completed Tasks</span>}
+              </Link>
+            </li>
+
               </ul>
             </nav>
           </div>
@@ -104,15 +136,16 @@ export default function Dashboard() {
                 <span className="text-gray-400">No tasks yet...</span>
               ) : (
                 <ul className="space-y-2">
-                  {tasks.map((task) => (
+                  {tasks.filter((task) => !task.completed).map((task) => (
                     <li
                       key={task.id}
-                      className={`p-3 rounded shadow-sm flex justify-between items-center ${task.priority === 'High'
-                        ? 'bg-red-200'
-                        : task.priority === 'Medium'
+                      className={`p-3 rounded shadow-sm flex justify-between items-center ${
+                        task.priority === 'High'
+                          ? 'bg-red-200'
+                          : task.priority === 'Medium'
                           ? 'bg-yellow-200'
                           : 'bg-green-200'
-                        }`}
+                      }`}
                     >
                       <div>
                         <div className="font-bold">{task.title}</div>
@@ -123,21 +156,38 @@ export default function Dashboard() {
                       <span className="text-sm">
                         {task.completed ? "✅ Done" : "⏳ Pending"}
                       </span>
+                     <label >
+                      <input
+                        type="checkbox"
+                        checked={task.completed || false}
+                        onChange={(e) => onToggleCompleted(task.id, e.target.checked)}
+                      />
+                    </label>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
+
+            <div className="mt-4 text-center">
+        <Link to="/add-task" className="inline-flex items-center space-x-2 text-blue-600 hover:underline">
+          <span>Add Task</span>
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                      </svg>
+        </Link>
+      </div>
+      <div className="mt-6 text-center">
+          <Link to="/completed-task" className="text-blue-600">
+             Completed Tasks →
+          </Link>
+          </div>
           </main>
 
-          <footer className="flex-shrink-0 py-2 mb-2">
-            Made by{" "}
-            <a className="text-blue-600 underline" href="https://github.com/Kamona-WD" target="_blank" rel="noopener noreferrer">
-              Ahmed Kamel
-            </a>
-          </footer>
+         
         </div>
       </div>
     </div>
-  )
+    
+  );
 }
