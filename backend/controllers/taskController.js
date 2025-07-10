@@ -1,10 +1,15 @@
-import Assignment from '../models/Assignment.js';
+import Assignment from '../models/Task.js';
 
 // Fake-memory array (you can remove later)
 let tasks = [];
 
-export const getAllTasks = (req, res) => {
-  res.json(tasks);
+export const getAllTasks = async (req, res) => {
+  try {
+    const tasks = await Assignment.find({ user: req.user._id });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch tasks" });
+  }
 };
 
 export const addTask = (req, res) => {
@@ -51,4 +56,25 @@ export const getTaskById = async (req, res) => {
       res.status(400).json({ error: "Invalid ID" });
     }
   };
+
+  export const updateTask = async (req, res) => {
+    const { id } = req.params;
+    const { completed } = req.body;
+  
+    try {
+      const task = await Assignment.findOneAndUpdate(
+        { _id: id, user: req.user._id }, // ✅ Ensure user owns the task
+        { completed },
+        { new: true }
+      );
+  
+      if (!task) return res.status(404).json({ message: "Task not found" });
+  
+      res.json(task);
+    } catch (err) {
+      console.error("Error updating task:", err);
+      res.status(500).json({ message: "Failed to update task" });
+    }
+  };
+  
   

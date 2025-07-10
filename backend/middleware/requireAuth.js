@@ -1,24 +1,29 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+// backend/middleware/requireAuth.js
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const requireAuth = async (req, res, next) => {
-  // Get the token from the Authorization header
-  const { authorization } = req.headers;
+  const authHeader = req.headers.authorization;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authorization token required' });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 
-  const token = authorization.split(' ')[1];
+  const token = authHeader.split(" ")[1];
 
   try {
-    const { _id } = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded._id).select("-password");
 
-    req.user = await User.findById(_id).select('_id');
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    req.user = user; // ✅ Attach user to request
     next();
-  } catch (error) {
-    console.error('Auth error:', error);
-    res.status(401).json({ error: 'Request is not authorized' });
+  } catch (err) {
+    console.error("Auth error:", err);
+    return res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 };
 

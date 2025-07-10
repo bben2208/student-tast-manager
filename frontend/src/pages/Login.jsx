@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import api from "../services/api"; // ✅ add this
+
 
 const Login = () => {
   const { login } = useAuth(); // ✅ use only this
@@ -12,22 +14,23 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const res = await axios.post("http://localhost:5002/api/users/login", {
-        email,
-        password,
-      });
-
+      const res = await api.post("/api/users/login", { email, password });
+  
       if (res.data) {
-        login(res.data); // ✅ set user in context
-        navigate("/dashboard"); // ✅ redirect to dashboard
+        login({
+          token: res.data.token,
+          ...res.data.user,
+        });
+        navigate("/dashboard");
       }
     } catch (err) {
       alert("Invalid credentials");
       console.error("Login error:", err);
     }
   };
+  
 
   return (
     <div className="flex items-center min-h-screen p-4 bg-gray-100 lg:justify-center">

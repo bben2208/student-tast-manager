@@ -12,16 +12,32 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🧪 Submitting registration form:", form); // ✅ log form data
+  
     try {
-      const res = await api.post("/users/register", form);
-      login(res.data); // ✅ save user to context
-      navigate("/dashboard"); // ✅ redirect to dashboard
+      console.log("➡️ Sending POST to /api/users/register");
+
+      const res = await api.post("/api/users/register", form);
+      console.log("✅ Registration successful:", res.data); // ✅ log response
+  
+      if (res.data) {
+        login(res.data);
+        navigate("/dashboard");
+        console.log("✅ Register response:", res);
+
+      }
     } catch (err) {
+      console.error("❌ Register error:", err); // ✅ log full Axios error
       alert(err.response?.data?.message || "Registration failed");
     }
   };
+  
+  
+  
 
   return (
     <div className="flex items-center min-h-screen p-4 bg-gray-100 lg:justify-center">
