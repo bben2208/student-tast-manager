@@ -1,17 +1,33 @@
 import { useState, useEffect } from 'react';
+import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const useDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
   const [tasks, setTasks] = useState([]);
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
+  const { user } = useAuth();
 
-  // Load tasks from localStorage
+  // Load tasks from backend
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    setTasks(savedTasks);
-  }, []);
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await api.get('/api/assignments', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTasks(res.data);
+      } catch (err) {
+        console.error("❌ Failed to fetch tasks:", err);
+      }
+    };
 
-  // Apply theme based on dark mode
+    if (user) fetchTasks();
+  }, [user]);
+
+  // Apply dark mode theme
   useEffect(() => {
     if (dark) {
       document.documentElement.classList.add("dark");
@@ -22,13 +38,26 @@ const useDashboard = () => {
     }
   }, [dark]);
 
-  // Toggle completed task
-  const onToggleCompleted = (taskId, isChecked) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === taskId ? { ...task, completed: isChecked } : task
-    );
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  // PATCH: toggle task completed
+  const onToggleCompleted = async (taskId, isChecked) => {
+    try {
+      const token = localStorage.getItem('token');
+      await api.patch(`/api/assignments/${taskId}`, {
+        completed: isChecked,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTasks(prev =>
+        prev.map(task =>
+          task._id === taskId ? { ...task, completed: isChecked } : task
+        )
+      );
+    } catch (err) {
+      console.error("❌ Failed to update task status:", err);
+    }
   };
 
   return {
@@ -37,7 +66,7 @@ const useDashboard = () => {
     tasks,
     dark,
     setDark,
-    onToggleCompleted
+    onToggleCompleted,
   };
 };
 

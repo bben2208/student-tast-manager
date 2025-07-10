@@ -121,7 +121,8 @@ export default function Dashboard() {
                 <input
                   type="checkbox"
                   checked={task.completed || false}
-                  onChange={(e) => onToggleCompleted(task.id, e.target.checked)}
+                  onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
+
                 />
                 <span className="text-sm">
                   {task.completed ? "✅ Done" : "⏳ "}
