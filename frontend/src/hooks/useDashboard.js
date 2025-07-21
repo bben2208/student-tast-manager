@@ -40,6 +40,13 @@ const useDashboard = () => {
 
   // PATCH: toggle task completed
   const onToggleCompleted = async (taskId, isChecked) => {
+    console.log("Task ID:", task._id);
+
+    if (!taskId) {
+      console.error("❌ taskId is missing");
+      return;
+    }
+  
     try {
       const token = localStorage.getItem('token');
       await api.patch(`/api/assignments/${taskId}`, {
@@ -49,7 +56,7 @@ const useDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       setTasks(prev =>
         prev.map(task =>
           task._id === taskId ? { ...task, completed: isChecked } : task
@@ -59,7 +66,7 @@ const useDashboard = () => {
       console.error("❌ Failed to update task status:", err);
     }
   };
-
+  
   return {
     isSidebarOpen,
     setSidebarOpen,

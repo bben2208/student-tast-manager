@@ -5,7 +5,8 @@ import {
   getAllTasks,
   createAssignment,
   getTaskById,
-  updateTask
+  updateTask,
+  deleteTask
 } from "../controllers/taskController.js";
 
 const router = express.Router();
@@ -14,5 +15,7 @@ router.get("/", requireAuth, getAllTasks);
 router.get("/:id", requireAuth, getTaskById);
 router.post("/", requireAuth, createAssignment);
 router.patch("/:id", requireAuth, updateTask);
+router.delete("/:id", requireAuth, deleteTask);
+
 
 export default router;

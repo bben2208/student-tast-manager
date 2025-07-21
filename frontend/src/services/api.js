@@ -1,8 +1,9 @@
-import axios from "axios";
+// frontend/services/api.js
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: "/api",
-  withCredentials: true, // ✅ required if backend CORS allows credentials
+  baseURL: '/api',
+  withCredentials: true,
 });
 
 export default api;
