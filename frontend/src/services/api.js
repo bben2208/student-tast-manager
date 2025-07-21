@@ -1,8 +1,8 @@
 // frontend/services/api.js
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: "https://student-tast-manager.onrender.com/api",
   withCredentials: true,
 });
 
