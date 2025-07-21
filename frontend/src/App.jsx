@@ -19,4 +19,4 @@ function App() {
   );
 }
 
-export default App; // ✅ this fixes the error
+export default App; 
