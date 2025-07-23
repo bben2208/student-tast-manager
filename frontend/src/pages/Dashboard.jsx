@@ -12,13 +12,14 @@ export default function Dashboard() {
   } = useDashboard();
 
   // If tasks is not ready yet, show loading screen
-  if (!Array.isArray(tasks)) {
+  if (tasks === null) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-500 dark:text-white">
         Loading tasks...
       </div>
     );
   }
+  
 
   return (
     <div className="relative flex h-screen bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-white">

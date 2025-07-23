@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const useDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(null);
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
   const { user } = useAuth();
 
