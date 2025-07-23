@@ -22,9 +22,10 @@ const __dirname = path.dirname(__filename);
 
 // CORS setup
 const allowedOrigins = [
-  "http://localhost:5173", // for dev
-  "https://your-deployed-site.netlify.app" // replace with real domain
+  "http://localhost:5173",
+  "https://student-tast-manager.onrender.com"
 ];
+
 
 app.use(cors({
   origin: (origin, callback) => {
