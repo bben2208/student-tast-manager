@@ -11,7 +11,9 @@ export default function Dashboard() {
     onToggleCompleted,
   } = useDashboard();
 
-  // If tasks is not ready yet, show loading screen
+  console.log("🧪 Loaded tasks:", tasks);
+
+  // Show loader while tasks are being fetched
   if (tasks === null) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-500 dark:text-white">
@@ -19,7 +21,17 @@ export default function Dashboard() {
       </div>
     );
   }
-  
+
+  // Defensive check: if tasks isn't an array
+  if (!Array.isArray(tasks)) {
+    return (
+      <div className="flex items-center justify-center h-screen text-red-600 dark:text-red-400 font-bold text-center">
+        ❌ Error: Tasks data is corrupted or not an array
+      </div>
+    );
+  }
+
+  const pendingTasks = tasks.filter((t) => !t.completed);
 
   return (
     <div className="relative flex h-screen bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -30,6 +42,7 @@ export default function Dashboard() {
         }`}
       >
         <div className="h-full p-4 bg-white dark:bg-gray-800 shadow-lg space-y-6">
+          {/* Logo + Toggle */}
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -42,6 +55,7 @@ export default function Dashboard() {
             {isSidebarOpen && <span className="font-bold text-blue-800 dark:text-white">STM</span>}
           </div>
 
+          {/* Navigation Links */}
           <nav>
             <ul className="space-y-4">
               <li><Link to="/" className="flex items-center gap-2 hover:text-blue-600"><span>🏠</span>{isSidebarOpen && <span>Dashboard</span>}</Link></li>
@@ -55,6 +69,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
+        {/* Header */}
         <header className="sticky top-0 flex justify-between items-center p-4 bg-blue-50 dark:bg-gray-800 shadow">
           <h1 className="text-xl font-bold text-blue-800 dark:text-white">Student Task Manager</h1>
           <button
@@ -65,17 +80,18 @@ export default function Dashboard() {
           </button>
         </header>
 
+        {/* Task List Section */}
         <main className="p-4">
           <div className="bg-blue-500 dark:bg-blue-700 text-white p-4 rounded shadow text-center text-2xl font-semibold">
             Task List
           </div>
 
           <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded shadow">
-            {tasks.filter((t) => !t.completed).length === 0 ? (
+            {pendingTasks.length === 0 ? (
               <p className="text-gray-400 dark:text-gray-300 text-center">No tasks yet...</p>
             ) : (
               <ul className="space-y-2">
-                {tasks.filter((t) => !t.completed).map((task) => (
+                {pendingTasks.map((task) => (
                   <li
                     key={task._id}
                     className={`p-3 rounded shadow flex justify-between items-center ${
