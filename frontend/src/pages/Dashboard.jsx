@@ -11,6 +11,15 @@ export default function Dashboard() {
     onToggleCompleted,
   } = useDashboard();
 
+  // If tasks is not ready yet, show loading screen
+  if (!Array.isArray(tasks)) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500 dark:text-white">
+        Loading tasks...
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex h-screen bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Sidebar */}
@@ -20,57 +29,24 @@ export default function Dashboard() {
         }`}
       >
         <div className="h-full p-4 bg-white dark:bg-gray-800 shadow-lg space-y-6">
-          {/* Logo + Toggle */}
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
               className="text-blue-600 dark:text-white"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            {isSidebarOpen && (
-              <span className="font-bold text-blue-800 dark:text-white">STM</span>
-            )}
+            {isSidebarOpen && <span className="font-bold text-blue-800 dark:text-white">STM</span>}
           </div>
 
-          {/* Links */}
           <nav>
             <ul className="space-y-4">
-              <li>
-                <Link to="/" className="flex items-center gap-2 hover:text-blue-600">
-                  <span>🏠</span>
-                  {isSidebarOpen && <span>Dashboard</span>}
-                </Link>
-              </li>
-              <li>
-                <Link to="/add-task" className="flex items-center gap-2 hover:text-blue-600">
-                  <span>➕</span>
-                  {isSidebarOpen && <span>Add Task</span>}
-                </Link>
-              </li>
-              <li>
-                <Link to="/completed-task" className="flex items-center gap-2 hover:text-blue-600">
-                  <span>✅</span>
-                  {isSidebarOpen && <span>Completed</span>}
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="flex items-center gap-2 hover:text-blue-600">
-                  <span>🔐</span>
-                  {isSidebarOpen && <span>Logout</span>}
-                </Link>
-              </li>
+              <li><Link to="/" className="flex items-center gap-2 hover:text-blue-600"><span>🏠</span>{isSidebarOpen && <span>Dashboard</span>}</Link></li>
+              <li><Link to="/add-task" className="flex items-center gap-2 hover:text-blue-600"><span>➕</span>{isSidebarOpen && <span>Add Task</span>}</Link></li>
+              <li><Link to="/completed-task" className="flex items-center gap-2 hover:text-blue-600"><span>✅</span>{isSidebarOpen && <span>Completed</span>}</Link></li>
+              <li><Link to="/login" className="flex items-center gap-2 hover:text-blue-600"><span>🔐</span>{isSidebarOpen && <span>Logout</span>}</Link></li>
             </ul>
           </nav>
         </div>
@@ -78,7 +54,6 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
-        {/* Header */}
         <header className="sticky top-0 flex justify-between items-center p-4 bg-blue-50 dark:bg-gray-800 shadow">
           <h1 className="text-xl font-bold text-blue-800 dark:text-white">Student Task Manager</h1>
           <button
@@ -89,7 +64,6 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* Task List */}
         <main className="p-4">
           <div className="bg-blue-500 dark:bg-blue-700 text-white p-4 rounded shadow text-center text-2xl font-semibold">
             Task List
@@ -102,7 +76,7 @@ export default function Dashboard() {
               <ul className="space-y-2">
                 {tasks.filter((t) => !t.completed).map((task) => (
                   <li
-                    key={task.id}
+                    key={task._id}
                     className={`p-3 rounded shadow flex justify-between items-center ${
                       task.priority === 'High'
                         ? 'bg-red-200'
@@ -117,18 +91,16 @@ export default function Dashboard() {
                       <div className="text-xs text-gray-500 dark:text-gray-300">Due: {task.dueDate}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-300">Teacher: {task.teacher}</div>
                     </div>
-                <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={task.completed || false}
-                  onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
-
-                />
-                <span className="text-sm">
-                  {task.completed ? "✅ Done" : "⏳ "}
-                </span>
-              </label>
-
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={task.completed || false}
+                        onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
+                      />
+                      <span className="text-sm">
+                        {task.completed ? "✅ Done" : "⏳"}
+                      </span>
+                    </label>
                   </li>
                 ))}
               </ul>
@@ -139,6 +111,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
-
