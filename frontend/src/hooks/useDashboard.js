@@ -1,14 +1,14 @@
-//useDashboard.js
-import { useEffect, useState } from "react";
+// hooks/useDashboard.js
+import { useState, useEffect } from "react";
 import api from "../services/api";
 
-const useCompletedTasks = () => {
-  const [completedTasks, setCompletedTasks] = useState([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(false); // 🔄 to refresh after update
+const useDashboard = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1280);
+  const [dark, setDark] = useState(false);
+  const [tasks, setTasks] = useState(null); // null for loading state
 
-  // ✅ Fetch only completed tasks
   useEffect(() => {
-    const fetchCompleted = async () => {
+    const fetchTasks = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await api.get("/assignments", {
@@ -19,26 +19,23 @@ const useCompletedTasks = () => {
 
         if (!Array.isArray(res.data)) {
           console.error("❌ Tasks data is corrupted or not an array:", res.data);
-          setCompletedTasks([]);
+          setTasks([]);
           return;
         }
 
-        const completedOnly = res.data.filter((task) => task.completed === true);
-        setCompletedTasks(completedOnly);
+        setTasks(res.data);
       } catch (err) {
-        console.error("❌ Failed to fetch completed tasks:", err);
-        setCompletedTasks([]);
+        console.error("❌ Failed to fetch tasks:", err);
+        setTasks([]);
       }
     };
 
-    fetchCompleted();
-  }, [refreshTrigger]);
+    fetchTasks();
+  }, []);
 
-  // ✅ Toggle back to incomplete
-  const onToggleIncomplete = async (taskId, isChecked) => {
+  const onToggleCompleted = async (taskId, isChecked) => {
     try {
       const token = localStorage.getItem("token");
-
       await api.patch(`/assignments/${taskId}`, {
         completed: isChecked,
       }, {
@@ -47,19 +44,41 @@ const useCompletedTasks = () => {
         },
       });
 
-      // Remove from local list immediately
-      setCompletedTasks((prev) =>
-        prev.filter((task) => task._id !== taskId)
+      setTasks(prev =>
+        prev.map((task) =>
+          task._id === taskId ? { ...task, completed: isChecked } : task
+        )
       );
-
-      // Trigger refresh to sync with backend
-      setRefreshTrigger((prev) => !prev);
     } catch (err) {
-      console.error("❌ Error toggling back to incomplete:", err);
+      console.error("❌ Error updating task completion:", err);
     }
   };
 
-  return { completedTasks, onToggleIncomplete };
+  const onDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete(`/assignments/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTasks(prev => prev.filter(task => task._id !== taskId));
+    } catch (err) {
+      console.error("❌ Failed to delete task:", err);
+    }
+  };
+
+  return {
+    isSidebarOpen,
+    setSidebarOpen,
+    tasks,
+    setTasks,
+    dark,
+    setDark,
+    onToggleCompleted,
+    onDeleteTask
+  };
 };
 
-export default useCompletedTasks;
+export default useDashboard;

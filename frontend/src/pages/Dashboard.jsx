@@ -10,7 +10,9 @@ export default function Dashboard() {
     dark,
     setDark,
     onToggleCompleted,
+    onDeleteTask, // this must be added!
   } = useDashboard();
+  
 
   console.log("🧪 Loaded tasks:", tasks);
 
