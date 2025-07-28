@@ -1,23 +1,41 @@
 import { useEffect, useState } from "react";
+import api from "../services/api";
 
 const useCompletedTasks = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
 
-  // Load completed tasks on mount
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const completedOnly = savedTasks.filter(task => task.completed === true);
-    setCompletedTasks(completedOnly);
+    const fetchCompleted = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await api.get("/assignments", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const completedOnly = res.data.filter((task) => task.completed === true);
+        setCompletedTasks(completedOnly);
+      } catch (err) {
+        console.error("❌ Failed to fetch completed tasks:", err);
+        setCompletedTasks([]);
+      }
+    };
+
+    fetchCompleted();
   }, []);
 
-  // Toggle back to incomplete
-  const onToggleIncomplete = (taskId, isChecked) => {
-    const allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const updatedTasks = allTasks.map((task) =>
-      task.id === taskId ? { ...task, completed: isChecked } : task
-    );
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    setCompletedTasks(updatedTasks.filter((task) => task.completed));
+  const onToggleIncomplete = async (taskId, isChecked) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.patch(`/assignments/${taskId}`, {
+        completed: isChecked,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setCompletedTasks((prev) => prev.filter((task) => task._id !== taskId));
+    } catch (err) {
+      console.error("❌ Failed to toggle task:", err);
+    }
   };
 
   return { completedTasks, onToggleIncomplete };

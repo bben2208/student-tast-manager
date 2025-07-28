@@ -1,5 +1,6 @@
-import { useState } from "react"
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const useAddTask = () => {
   const [task, setTask] = useState({
@@ -10,60 +11,49 @@ const useAddTask = () => {
     teacher: '',
     priority: 'Medium',
     status: 'Pending',
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState(null)
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setTask({ ...task, [e.target.name]: e.target.value })
-  }
+    setTask({ ...task, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!task.title || !task.subject || !task.dueDate) {
-      setMessage({ type: 'error', text: 'Please fill in all required fields.' })
-      return
+      setMessage({ type: 'error', text: 'Please fill in all required fields.' });
+      return;
     }
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const due = new Date(task.dueDate)
-    due.setHours(0, 0, 0, 0)
-
-    if (due < today) {
-      setMessage({ type: 'error', text: 'Due date must be today or in the future.' })
-      return
+    const today = new Date();
+    const due = new Date(task.dueDate);
+    if (due < today.setHours(0, 0, 0, 0)) {
+      setMessage({ type: 'error', text: 'Due date must be today or in the future.' });
+      return;
     }
 
-    setLoading(true)
-    setMessage(null)
+    setLoading(true);
+    setMessage(null);
 
-    // ✅ Save to localStorage
     try {
-      const existingTasks = JSON.parse(localStorage.getItem("tasks")) || []
+      const token = localStorage.getItem("token");
+      await api.post("/assignments", task, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      const newTask = {
-        ...task,
-        id: Date.now(),
-        completed: false,
-      }
-
-      localStorage.setItem("tasks", JSON.stringify([...existingTasks, newTask]))
-
-      setMessage({ type: 'success', text: 'Task added successfully!' })
-
-      setTimeout(() => navigate('/dashboard'), 1000)
+      setMessage({ type: 'success', text: 'Task added successfully!' });
+      setTimeout(() => navigate('/dashboard'), 1000);
     } catch (err) {
-
-
-      setMessage({ type: 'error', text: 'Failed to save task locally.' })
+      console.error("Add task error:", err);
+      setMessage({ type: 'error', text: 'Failed to save task to server.' });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return {
     task,
@@ -73,7 +63,7 @@ const useAddTask = () => {
     handleChange,
     handleSubmit,
     setLoading,
-  }
-}
+  };
+};
 
-export default useAddTask
+export default useAddTask;
