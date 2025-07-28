@@ -13,19 +13,27 @@ const useDashboard = () => {
     const fetchTasks = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await api.get('/api/assignments', {
+        const res = await api.get('/assignments', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setTasks(res.data);
+  
+        if (Array.isArray(res.data)) {
+          setTasks(res.data);
+        } else {
+          console.error("❌ Unexpected response: tasks is not an array", res.data);
+          setTasks([]); // fallback to empty list to avoid crashes
+        }
       } catch (err) {
         console.error("❌ Failed to fetch tasks:", err);
+        setTasks([]);
       }
     };
-
+  
     if (user) fetchTasks();
   }, [user]);
+  
 
   // Apply dark mode theme
   useEffect(() => {
