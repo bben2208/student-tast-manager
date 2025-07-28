@@ -81,50 +81,61 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* Task List Section */}
-        <main className="p-4">
-          <div className="bg-blue-500 dark:bg-blue-700 text-white p-4 rounded shadow text-center text-2xl font-semibold">
-            Task List
-          </div>
+        {/* Task List Section */}<main className="p-4">
+  <div className="bg-blue-500 dark:bg-blue-700 text-white p-4 rounded shadow text-center text-2xl font-semibold">
+    Task List
+  </div>
 
-          <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded shadow">
-            {pendingTasks.length === 0 ? (
-              <p className="text-gray-400 dark:text-gray-300 text-center">No tasks yet...</p>
-            ) : (
-              <ul className="space-y-2">
-                {pendingTasks.map((task) => (
-                  <li
-                    key={task._id}
-                    className={`p-3 rounded shadow flex justify-between items-center ${
-                      task.priority === 'High'
-                        ? 'bg-red-200'
-                        : task.priority === 'Medium'
-                        ? 'bg-yellow-200'
-                        : 'bg-green-200'
-                    } dark:bg-opacity-80`}
-                  >
-                    <div>
-                      <div className="font-bold">{task.title}</div>
-                      <div className="text-sm text-gray-700 dark:text-gray-200">{task.subject}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-300">Due: {task.dueDate}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-300">Teacher: {task.teacher}</div>
-                    </div>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={task.completed || false}
-                        onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
-                      />
-                      <span className="text-sm">
-                        {task.completed ? "✅ Done" : "⏳"}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </main>
+  <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded shadow">
+    {pendingTasks.length === 0 ? (
+      <p className="text-gray-400 dark:text-gray-300 text-center">No tasks yet...</p>
+    ) : (
+      <ul className="space-y-2">
+        {pendingTasks.map((task) => (
+          <li
+            key={task._id}
+            className={`p-3 rounded shadow flex justify-between items-center ${
+              task.priority === "High"
+                ? "bg-red-200"
+                : task.priority === "Medium"
+                ? "bg-yellow-200"
+                : "bg-green-200"
+            } dark:bg-opacity-80`}
+          >
+            <div>
+              <div className="font-bold">{task.title}</div>
+              <div className="text-sm text-gray-700 dark:text-gray-200">
+                {task.subject}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-300">
+                Due: {new Date(task.dueDate).toLocaleDateString("en-GB")}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-300">
+                Teacher: {task.teacher || "—"}
+              </div>
+              <div className="text-xs italic text-gray-600 dark:text-gray-400">
+                Priority: {task.priority}
+              </div>
+            </div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={task.completed || false}
+                onChange={(e) =>
+                  onToggleCompleted(task._id, e.target.checked)
+                }
+              />
+              <span className="text-sm">
+                {task.completed ? "✅ Done" : "⏳"}
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</main>
+
       </div>
     </div>
   );

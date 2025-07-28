@@ -58,7 +58,7 @@ const useDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await api.patch(`/api/assignments/${taskId}`, {
+      await api.patch(`/assignments/${taskId}`, {
         completed: isChecked,
       }, {
         headers: {
