@@ -33,6 +33,25 @@ const useDashboard = () => {
     fetchTasks();
   }, []);
 
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [dark]);
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setDark(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+  
+
   const onToggleCompleted = async (taskId, isChecked) => {
     try {
       const token = localStorage.getItem("token");
