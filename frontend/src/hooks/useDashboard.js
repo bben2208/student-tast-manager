@@ -3,9 +3,9 @@ import api from "../services/api";
 
 const useCompletedTasks = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(false); // 🔄 trigger reload
+  const [refreshTrigger, setRefreshTrigger] = useState(false); // 🔄 to refresh after update
 
-  // Fetch completed tasks
+  // ✅ Fetch only completed tasks
   useEffect(() => {
     const fetchCompleted = async () => {
       try {
@@ -16,20 +16,28 @@ const useCompletedTasks = () => {
           },
         });
 
-        const tasks = res.data;
-        const completedOnly = tasks.filter((task) => task.completed === true);
+        if (!Array.isArray(res.data)) {
+          console.error("❌ Tasks data is corrupted or not an array:", res.data);
+          setCompletedTasks([]);
+          return;
+        }
+
+        const completedOnly = res.data.filter((task) => task.completed === true);
         setCompletedTasks(completedOnly);
       } catch (err) {
         console.error("❌ Failed to fetch completed tasks:", err);
+        setCompletedTasks([]);
       }
     };
 
     fetchCompleted();
-  }, [refreshTrigger]); // ✅ re-run when toggled
+  }, [refreshTrigger]);
 
+  // ✅ Toggle back to incomplete
   const onToggleIncomplete = async (taskId, isChecked) => {
     try {
       const token = localStorage.getItem("token");
+
       await api.patch(`/assignments/${taskId}`, {
         completed: isChecked,
       }, {
@@ -38,11 +46,12 @@ const useCompletedTasks = () => {
         },
       });
 
+      // Remove from local list immediately
       setCompletedTasks((prev) =>
         prev.filter((task) => task._id !== taskId)
       );
 
-      // ✅ Force refetch of tasks to stay in sync
+      // Trigger refresh to sync with backend
       setRefreshTrigger((prev) => !prev);
     } catch (err) {
       console.error("❌ Error toggling back to incomplete:", err);
