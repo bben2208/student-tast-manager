@@ -10,8 +10,8 @@ import PrivateRoute from './components/PrivateRoute';
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/Login" />} />
+      <Route path="/" element={<Navigate to="/Login" />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/add-task" element={<PrivateRoute><AddTask /></PrivateRoute>} />
