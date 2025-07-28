@@ -1,9 +1,6 @@
-//taskController
 import Assignment from '../models/Task.js';
 
-// Fake-memory array (you can remove later)
-let tasks = [];
-
+// Get all tasks for the logged-in user
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Assignment.find({ user: req.user._id });
@@ -13,42 +10,40 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
-export const addTask = (req, res) => {
-  const { title, dueDate, completed } = req.body;
-
-  if (!title) {
-    return res.status(400).json({ message: "Title is required" });
-  }
-
-  const newTask = {
-    id: Date.now(),
-    title,
-    dueDate: dueDate || null,
-    completed: completed || false,
-  };
-
-  tasks.push(newTask);
-  res.status(201).json(newTask);
-};
-
+// Create new task from frontend form (correct version)
 export const createAssignment = async (req, res) => {
-  const { title, subject, dueDate, description } = req.body;
+  const {
+    title,
+    subject,
+    dueDate,
+    description,
+    teacher,
+    priority,
+    status,
+  } = req.body;
 
   try {
-    const assignment = await Assignment.create({
+    const task = new Assignment({
       title,
       subject,
       dueDate,
       description,
+      teacher,
+      priority,
+      status,
+      completed: false,
       user: req.user._id,
     });
 
-    res.status(201).json(assignment);
+    const saved = await task.save();
+    res.status(201).json(saved);
   } catch (err) {
+    console.error("❌ Error saving task:", err);
     res.status(400).json({ error: err.message });
   }
 };
 
+// Get one task by ID
 export const getTaskById = async (req, res) => {
   try {
     const task = await Assignment.findById(req.params.id);
@@ -59,19 +54,19 @@ export const getTaskById = async (req, res) => {
   }
 };
 
+// Update task status (e.g., mark as completed)
 export const updateTask = async (req, res) => {
   const { id } = req.params;
   const { completed } = req.body;
 
   try {
     const task = await Assignment.findOneAndUpdate(
-      { _id: id, user: req.user._id }, // ✅ Ensure user owns the task
+      { _id: id, user: req.user._id },
       { completed },
       { new: true }
     );
 
     if (!task) return res.status(404).json({ message: "Task not found" });
-
     res.json(task);
   } catch (err) {
     console.error("Error updating task:", err);
@@ -79,11 +74,12 @@ export const updateTask = async (req, res) => {
   }
 };
 
+// Delete task
 export const deleteTask = async (req, res) => {
   try {
     const task = await Assignment.findOneAndDelete({
       _id: req.params.id,
-      user: req.user._id, // ✅ make sure user owns it
+      user: req.user._id,
     });
 
     if (!task) return res.status(404).json({ message: "Task not found" });
