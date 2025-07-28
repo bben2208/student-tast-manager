@@ -1,4 +1,3 @@
-//useDashboard.js 
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -19,7 +18,7 @@ const useDashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (Array.isArray(res.data)) {
           setTasks(res.data);
         } else {
@@ -31,10 +30,9 @@ const useDashboard = () => {
         setTasks([]);
       }
     };
-  
+
     if (user) fetchTasks();
   }, [user]);
-  
 
   // Apply dark mode theme
   useEffect(() => {
@@ -47,15 +45,8 @@ const useDashboard = () => {
     }
   }, [dark]);
 
-  // PATCH: toggle task completed
+  // ✅ PATCH: toggle task completed
   const onToggleCompleted = async (taskId, isChecked) => {
-    console.log("Task ID:", taskId);
-
-    if (!taskId) {
-      console.error("❌ taskId is missing");
-      return;
-    }
-
     try {
       const token = localStorage.getItem('token');
       await api.patch(`/assignments/${taskId}`, {
@@ -76,6 +67,25 @@ const useDashboard = () => {
     }
   };
 
+  // ✅ DELETE: remove task
+  const onDeleteTask = async (taskId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete(`/assignments/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTasks(prev => prev.filter(task => task._id !== taskId));
+    } catch (err) {
+      console.error("❌ Failed to delete task:", err);
+    }
+  };
+
   return {
     isSidebarOpen,
     setSidebarOpen,
@@ -83,6 +93,7 @@ const useDashboard = () => {
     dark,
     setDark,
     onToggleCompleted,
+    onDeleteTask, // ✅ now properly returned
   };
 };
 

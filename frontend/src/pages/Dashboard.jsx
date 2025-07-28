@@ -118,16 +118,26 @@ export default function Dashboard() {
               </div>
             </div>
             <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={!!task.completed} // force boolean
-                onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
-                aria-label="Toggle completed"
-              />
-              <span className="text-sm">
-                {task.completed ? "✅ Done" : "⏳ Pending"}
-              </span>
-              </label>
+            <input
+              type="checkbox"
+              checked={task.completed || false}
+              onChange={(e) =>
+                onToggleCompleted(task._id, e.target.checked)
+              }
+            />
+            <span className="text-sm">
+              {task.completed ? "✅ Done" : "⏳ Pending"}
+            </span>
+
+            {/* 🗑️ Delete Button */}
+            <button
+              onClick={() => onDeleteTask(task._id)}
+              className="ml-3 text-red-500 hover:text-red-700 text-sm"
+              title="Delete task"
+            >
+              🗑️
+            </button>
+          </label>
 
           </li>
         ))}

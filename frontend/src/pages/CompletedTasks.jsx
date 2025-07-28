@@ -44,7 +44,7 @@ export default function CompletedTasks() {
         )}
 
         <div className="mt-6 text-center">
-          <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline">
+          <Link to="/dashboard" className="text-blue-600 dark:text-blue-400 hover:underline">
             ← Back to Dashboard
           </Link>
         </div>
