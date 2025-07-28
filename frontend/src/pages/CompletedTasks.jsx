@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import useCompletedTasks from "../hooks/useCompletedTasks";
 
 export default function CompletedTasks() {
-  const { completedTasks, onToggleIncomplete } = useCompletedTasks();
+  const { completedTasks, onToggleIncomplete, onDeleteTask } = useCompletedTasks();
 
   return (
     <div className="min-h-screen bg-blue-50 dark:bg-gray-900 p-4 text-gray-900 dark:text-white">

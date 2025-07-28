@@ -22,7 +22,6 @@ const useCompletedTasks = () => {
         }
 
         const completedOnly = res.data.filter((task) => task.completed === true);
-        console.log("✅ Completed tasks:", completedOnly);
         setCompletedTasks(completedOnly);
       } catch (err) {
         console.error("❌ Failed to fetch completed tasks:", err);
@@ -51,7 +50,7 @@ const useCompletedTasks = () => {
     }
   };
 
-  // ✅ CORRECTLY placed here (outside of toggle handler)
+  // ✅ ADD THIS FUNCTION
   const onDeleteTask = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
@@ -67,7 +66,11 @@ const useCompletedTasks = () => {
     }
   };
 
-  return { completedTasks, onToggleIncomplete, onDeleteTask };
+  return {
+    completedTasks,
+    onToggleIncomplete,
+    onDeleteTask, // ✅ EXPORT IT
+  };
 };
 
 export default useCompletedTasks;
