@@ -17,20 +17,24 @@ export default function CompletedTasks() {
           <ul className="space-y-2">
             {completedTasks.map(task => (
               <li
-                key={task.id}
+                key={task._id}
                 className="p-4 bg-green-200 dark:bg-green-400 dark:bg-opacity-60 rounded shadow flex justify-between items-center"
               >
                 <div>
                   <div className="font-bold">{task.title}</div>
                   <div className="text-sm text-gray-700 dark:text-gray-200">{task.subject}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-300">Due: {task.dueDate}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-300">Teacher: {task.teacher}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300">
+                    Due: {new Date(task.dueDate).toLocaleDateString("en-GB")}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300">
+                    Teacher: {task.teacher || "—"}
+                  </div>
                 </div>
                 <label className="flex items-center gap-2 text-green-800 dark:text-green-200 font-semibold">
                   <input
                     type="checkbox"
                     checked={true}
-                    onChange={(e) => onToggleIncomplete(task.id, e.target.checked)}
+                    onChange={(e) => onToggleIncomplete(task._id, e.target.checked)}
                   />
                   ✅ Done
                 </label>
