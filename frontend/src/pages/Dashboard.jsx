@@ -59,7 +59,7 @@ export default function Dashboard() {
           {/* Navigation Links */}
           <nav>
             <ul className="space-y-4">
-              <li><Link to="/" className="flex items-center gap-2 hover:text-blue-600"><span>🏠</span>{isSidebarOpen && <span>Dashboard</span>}</Link></li>
+              <li><Link to="/dashboard" className="flex items-center gap-2 hover:text-blue-600"><span>🏠</span>{isSidebarOpen && <span>Dashboard</span>}</Link></li>
               <li><Link to="/add-task" className="flex items-center gap-2 hover:text-blue-600"><span>➕</span>{isSidebarOpen && <span>Add Task</span>}</Link></li>
               <li><Link to="/completed-task" className="flex items-center gap-2 hover:text-blue-600"><span>✅</span>{isSidebarOpen && <span>Completed</span>}</Link></li>
               <li><Link to="/login" className="flex items-center gap-2 hover:text-blue-600"><span>🔐</span>{isSidebarOpen && <span>Logout</span>}</Link></li>
@@ -120,15 +120,15 @@ export default function Dashboard() {
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={task.completed || false}
-                onChange={(e) =>
-                  onToggleCompleted(task._id, e.target.checked)
-                }
+                checked={!!task.completed} // force boolean
+                onChange={(e) => onToggleCompleted(task._id, e.target.checked)}
+                aria-label="Toggle completed"
               />
               <span className="text-sm">
-                {task.completed ? "✅ Done" : "⏳"}
+                {task.completed ? "✅ Done" : "⏳ Pending"}
               </span>
-            </label>
+              </label>
+
           </li>
         ))}
       </ul>
