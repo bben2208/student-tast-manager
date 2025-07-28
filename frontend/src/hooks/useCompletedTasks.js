@@ -44,17 +44,30 @@ const useCompletedTasks = () => {
         },
       });
 
-      setCompletedTasks((prev) =>
-        prev.filter((task) => task._id !== taskId)
-      );
-
+      setCompletedTasks((prev) => prev.filter((task) => task._id !== taskId));
       setRefreshTrigger((prev) => !prev);
     } catch (err) {
       console.error("❌ Error toggling back to incomplete:", err);
     }
   };
 
-  return { completedTasks, onToggleIncomplete };
+  // ✅ CORRECTLY placed here (outside of toggle handler)
+  const onDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete(`/assignments/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCompletedTasks((prev) => prev.filter((task) => task._id !== taskId));
+    } catch (err) {
+      console.error("❌ Failed to delete task:", err);
+    }
+  };
+
+  return { completedTasks, onToggleIncomplete, onDeleteTask };
 };
 
 export default useCompletedTasks;

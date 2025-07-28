@@ -30,14 +30,24 @@ export default function CompletedTasks() {
                     Teacher: {task.teacher || "—"}
                   </div>
                 </div>
-                <label className="flex items-center gap-2 text-green-800 dark:text-green-200 font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    onChange={(e) => onToggleIncomplete(task._id, e.target.checked)}
-                  />
-                  ✅ Done
-                </label>
+                            <label className="flex items-center gap-2 text-green-800 dark:text-green-200 font-semibold">
+              <input
+                type="checkbox"
+                checked={true}
+                onChange={(e) => onToggleIncomplete(task._id, e.target.checked)}
+              />
+              ✅ Done
+
+              {/* 🗑️ Delete Button */}
+              <button
+                onClick={() => onDeleteTask(task._id)}
+                className="ml-2 text-red-600 hover:text-red-800 text-sm"
+                title="Delete task"
+              >
+                🗑️
+              </button>
+            </label>
+
               </li>
             ))}
           </ul>
