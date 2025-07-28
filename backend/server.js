@@ -27,6 +27,7 @@ const allowedOrigins = [
 ];
 
 
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -38,6 +39,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 
 // Built-in body parser
 app.use(express.json());

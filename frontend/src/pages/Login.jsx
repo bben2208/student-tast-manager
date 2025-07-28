@@ -16,7 +16,8 @@ const Login = () => {
     e.preventDefault();
   
     try {
-      const res =await api.post("/users/login", { email, password }); // ✅ No double /api
+      const res = await api.post("/users/login", { email, password }); // becomes /api/users/login behind the scenes
+
 
   
       if (res.data) {
